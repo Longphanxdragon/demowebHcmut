@@ -24,10 +24,12 @@ class News
 
     public function create(string $title, string $content): bool
     {
-        $stmt = $this->db->prepare('INSERT INTO news (title, content, created_at) VALUES (:title, :content, NOW())');
+        $createdAt = date('Y-m-d H:i:s');
+        $stmt = $this->db->prepare('INSERT INTO news (title, content, created_at) VALUES (:title, :content, :created_at)');
         return $stmt->execute([
             ':title' => $title,
             ':content' => $content,
+            ':created_at' => $createdAt,
         ]);
     }
 }

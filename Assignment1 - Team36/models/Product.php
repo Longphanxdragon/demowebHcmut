@@ -24,12 +24,14 @@ class Product
 
     public function create(string $title, string $description, float $price, string $imagePath): bool
     {
-        $stmt = $this->db->prepare('INSERT INTO products (title, description, price, image_path, created_at) VALUES (:title, :description, :price, :image_path, NOW())');
+        $createdAt = date('Y-m-d H:i:s');
+        $stmt = $this->db->prepare('INSERT INTO products (title, description, price, image_path, created_at) VALUES (:title, :description, :price, :image_path, :created_at)');
         return $stmt->execute([
             ':title' => $title,
             ':description' => $description,
             ':price' => $price,
             ':image_path' => $imagePath,
+            ':created_at' => $createdAt,
         ]);
     }
 

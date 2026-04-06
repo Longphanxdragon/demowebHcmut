@@ -8,7 +8,7 @@
     <div class="card">
       <div class="card-header">Thêm sản phẩm mới</div>
       <div class="card-body">
-        <form method="post" action="index.php?page=admin" enctype="multipart/form-data">
+        <form id="addProductForm" enctype="multipart/form-data">
           <input type="hidden" name="action" value="add_product">
           <div class="form-group">
             <label for="title">Tên sản phẩm</label>
@@ -62,6 +62,27 @@
   </div>
 </div>
 <div class="card mb-4">
+  <div class="card-header">Danh sách sản phẩm</div>
+  <div class="card-body" id="adminProductList">
+    <?php if (empty($products)): ?>
+      <div>Chưa có sản phẩm nào.</div>
+    <?php else: ?>
+      <div class="list-group">
+        <?php foreach ($products as $product): ?>
+          <div class="list-group-item d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="mb-1"><?php echo htmlspecialchars($product['title']); ?></h5>
+              <p class="mb-1"><?php echo htmlspecialchars($product['description']); ?></p>
+              <small><?php echo number_format($product['price'], 0, ',', '.'); ?> VND</small>
+            </div>
+            <button type="button" class="btn btn-sm btn-danger" onclick="deleteProduct(<?php echo intval($product['id']); ?>)">Xóa</button>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </div>
+</div>
+<div class="card mb-4">
   <div class="card-header">Danh sách liên hệ mới</div>
   <div class="card-body">
     <?php if (empty($contacts)): ?>
@@ -79,4 +100,45 @@
     <?php endif; ?>
   </div>
 </div>
+<script>
+  const addProductForm = document.getElementById('addProductForm');
+
+  addProductForm.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const formData = new FormData(addProductForm);
+
+    const response = await fetch('ajax_product.php', {
+      method: 'POST',
+      body: formData
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      alert(result.message);
+      window.location.reload();
+    } else {
+      alert(result.message || 'Có lỗi xảy ra khi thêm sản phẩm.');
+    }
+  });
+
+  async function deleteProduct(productId) {
+    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+      return;
+    }
+
+    const response = await fetch('ajax_product.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ action: 'delete_product', product_id: productId })
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      alert(result.message);
+      window.location.reload();
+    } else {
+      alert(result.message || 'Có lỗi xảy ra khi xóa sản phẩm.');
+    }
+  }
+</script>
 <?php require __DIR__ . '/footer.php'; ?>

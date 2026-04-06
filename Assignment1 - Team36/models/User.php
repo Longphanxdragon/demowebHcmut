@@ -15,13 +15,15 @@ class User
         }
 
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $this->db->prepare('INSERT INTO users (name, email, password, role, status, created_at) VALUES (:name, :email, :password, :role, :status, NOW())');
+        $createdAt = date('Y-m-d H:i:s');
+        $stmt = $this->db->prepare('INSERT INTO users (name, email, password, role, status, created_at) VALUES (:name, :email, :password, :role, :status, :created_at)');
         return $stmt->execute([
             ':name' => $name,
             ':email' => $email,
             ':password' => $hash,
             ':role' => 'member',
             ':status' => 'active',
+            ':created_at' => $createdAt,
         ]);
     }
 

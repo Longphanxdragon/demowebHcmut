@@ -10,13 +10,15 @@ class Contact
 
     public function save(string $name, string $email, string $subject, string $message): bool
     {
-        $stmt = $this->db->prepare('INSERT INTO contacts (name, email, subject, message, status, created_at) VALUES (:name, :email, :subject, :message, :status, NOW())');
+        $createdAt = date('Y-m-d H:i:s');
+        $stmt = $this->db->prepare('INSERT INTO contacts (name, email, subject, message, status, created_at) VALUES (:name, :email, :subject, :message, :status, :created_at)');
         return $stmt->execute([
             ':name' => $name,
             ':email' => $email,
             ':subject' => $subject,
             ':message' => $message,
             ':status' => 'new',
+            ':created_at' => $createdAt,
         ]);
     }
 
