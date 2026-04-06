@@ -1,10 +1,7 @@
 <?php
 session_start();
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'company_site');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_PATH', __DIR__ . '/database.sqlite');
 define('UPLOAD_DIR', __DIR__ . '/uploads/');
 
 define('APP_NAME', 'VNG Company');
