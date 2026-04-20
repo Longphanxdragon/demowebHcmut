@@ -69,7 +69,7 @@ class Database
         );
 
         INSERT OR IGNORE INTO users (id, name, email, password, role, status, created_at) VALUES
-        (1, 'Administrator', 'admin@vng.com', '$2y$10$CFU1MVrsCfF5yggqle0qaOcs/9WdVuUsUfH7B0rolUbDEByilAguq', 'admin', 'active', datetime('now'));
+        (1, 'Administrator', 'admin@vng.com', '\$2y\$10\$CFU1MVrsCfF5yggqle0qaOcs/9WdVuUsUfH7B0rolUbDEByilAguq', 'admin', 'active', datetime('now'));
 
         INSERT OR IGNORE INTO products (title, description, price, created_at) VALUES
         ('Giải pháp thương mại điện tử', 'Nền tảng trang web bán hàng chuyên nghiệp cho doanh nghiệp.', 12990000.00, datetime('now')),
