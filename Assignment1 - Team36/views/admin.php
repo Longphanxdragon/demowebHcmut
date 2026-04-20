@@ -41,7 +41,7 @@
           <table class="table mb-0">
             <thead>
               <tr>
-                <th>ID</th><th>Họ tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th>
+                <th>ID</th><th>Họ tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Tác vụ</th>
               </tr>
             </thead>
             <tbody>
@@ -52,6 +52,31 @@
                   <td><?php echo htmlspecialchars($user['email']); ?></td>
                   <td><?php echo htmlspecialchars($user['role']); ?></td>
                   <td><?php echo htmlspecialchars($user['status']); ?></td>
+                  <td>
+                    <?php if (intval($user['id']) !== intval($currentUser['id']) && $user['role'] !== 'admin'): ?>
+                      <form method="post" action="index.php?page=admin&contact_page=<?php echo intval($contactPage); ?>" class="mb-1">
+                        <input type="hidden" name="action" value="update_user_status">
+                        <input type="hidden" name="user_id" value="<?php echo intval($user['id']); ?>">
+                        <input type="hidden" name="status" value="<?php echo ($user['status'] === 'active') ? 'blocked' : 'active'; ?>">
+                        <button type="submit" class="btn btn-sm <?php echo ($user['status'] === 'active') ? 'btn-warning' : 'btn-success'; ?> btn-block">
+                          <?php echo ($user['status'] === 'active') ? 'Khóa' : 'Mở khóa'; ?>
+                        </button>
+                      </form>
+                      <form method="post" action="index.php?page=admin&contact_page=<?php echo intval($contactPage); ?>" class="mb-1">
+                        <input type="hidden" name="action" value="reset_user_password">
+                        <input type="hidden" name="user_id" value="<?php echo intval($user['id']); ?>">
+                        <input type="text" name="new_password" class="form-control form-control-sm mb-1" placeholder="Mật khẩu mới" minlength="6" required>
+                        <button type="submit" class="btn btn-sm btn-info btn-block">Reset mật khẩu</button>
+                      </form>
+                      <form method="post" action="index.php?page=admin&contact_page=<?php echo intval($contactPage); ?>" onsubmit="return confirm('Xóa người dùng này?');">
+                        <input type="hidden" name="action" value="delete_user">
+                        <input type="hidden" name="user_id" value="<?php echo intval($user['id']); ?>">
+                        <button type="submit" class="btn btn-sm btn-danger btn-block">Xóa</button>
+                      </form>
+                    <?php else: ?>
+                      <span class="text-muted small">Không áp dụng</span>
+                    <?php endif; ?>
+                  </td>
                 </tr>
               <?php endforeach; ?>
             </tbody>
@@ -93,10 +118,34 @@
           <li class="list-group-item">
             <strong><?php echo htmlspecialchars($contact['name']); ?></strong> (<?php echo htmlspecialchars($contact['email']); ?>) - <?php echo htmlspecialchars($contact['subject']); ?>
             <div class="small text-muted"><?php echo date('d/m/Y H:i', strtotime($contact['created_at'])); ?></div>
+            <div class="mb-2">Trạng thái hiện tại: <span class="badge badge-info"><?php echo htmlspecialchars($contact['status']); ?></span></div>
             <p><?php echo nl2br(htmlspecialchars($contact['message'])); ?></p>
+            <form method="post" action="index.php?page=admin&contact_page=<?php echo intval($contactPage); ?>" class="form-inline">
+              <input type="hidden" name="action" value="update_contact_status">
+              <input type="hidden" name="contact_id" value="<?php echo intval($contact['id']); ?>">
+              <label class="mr-2" for="status_<?php echo intval($contact['id']); ?>">Cập nhật:</label>
+              <select class="form-control form-control-sm mr-2" id="status_<?php echo intval($contact['id']); ?>" name="status">
+                <option value="new" <?php echo ($contact['status'] === 'new') ? 'selected' : ''; ?>>new</option>
+                <option value="read" <?php echo ($contact['status'] === 'read') ? 'selected' : ''; ?>>read</option>
+                <option value="replied" <?php echo ($contact['status'] === 'replied') ? 'selected' : ''; ?>>replied</option>
+              </select>
+              <button type="submit" class="btn btn-sm btn-outline-primary">Lưu</button>
+            </form>
           </li>
         <?php endforeach; ?>
       </ul>
+    <?php endif; ?>
+
+    <?php if ($contactTotalPages > 1): ?>
+      <nav class="mt-3" aria-label="Phân trang liên hệ">
+        <ul class="pagination pagination-sm mb-0">
+          <?php for ($p = 1; $p <= $contactTotalPages; $p++): ?>
+            <li class="page-item <?php echo ($p === $contactPage) ? 'active' : ''; ?>">
+              <a class="page-link" href="index.php?page=admin&contact_page=<?php echo $p; ?>"><?php echo $p; ?></a>
+            </li>
+          <?php endfor; ?>
+        </ul>
+      </nav>
     <?php endif; ?>
   </div>
 </div>

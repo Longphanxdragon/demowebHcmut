@@ -14,6 +14,30 @@ class Product
         return $stmt->fetchAll();
     }
 
+    public function searchPaged(string $keyword, int $limit, int $offset): array
+    {
+        $kw = '%' . $keyword . '%';
+        $stmt = $this->db->prepare(
+            'SELECT * FROM products
+             WHERE title LIKE :kw OR description LIKE :kw
+             ORDER BY created_at DESC
+             LIMIT :limit OFFSET :offset'
+        );
+        $stmt->bindValue(':kw', $kw, PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function countSearch(string $keyword): int
+    {
+        $kw = '%' . $keyword . '%';
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM products WHERE title LIKE :kw OR description LIKE :kw');
+        $stmt->execute([':kw' => $kw]);
+        return (int) $stmt->fetchColumn();
+    }
+
     public function getById(int $id): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM products WHERE id = :id LIMIT 1');

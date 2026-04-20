@@ -28,7 +28,8 @@
     </ul>
     <ul class="navbar-nav">
       <?php if ($currentUser): ?>
-        <li class="nav-item"><a class="nav-link" href="index.php?page=home">Xin chào <?php echo htmlspecialchars($currentUser['name']); ?></a></li>
+        <li class="nav-item"><a class="nav-link" href="index.php?page=profile">Xin chào <?php echo htmlspecialchars($currentUser['name']); ?></a></li>
+        <li class="nav-item <?php echo ($page === 'profile') ? 'active' : ''; ?>"><a class="nav-link" href="index.php?page=profile">Tài khoản</a></li>
         <?php if ($isAdmin): ?>
           <li class="nav-item"><a class="nav-link" href="index.php?page=admin">Quản trị</a></li>
         <?php endif; ?>
