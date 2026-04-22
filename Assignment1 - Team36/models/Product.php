@@ -59,6 +59,30 @@ class Product
         ]);
     }
 
+    public function update(int $id, string $title, string $description, float $price, string $imagePath): bool
+    {
+        if ($id <= 0) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare(
+            'UPDATE products
+             SET title = :title,
+                 description = :description,
+                 price = :price,
+                 image_path = :image_path
+             WHERE id = :id'
+        );
+
+        return $stmt->execute([
+            ':id' => $id,
+            ':title' => $title,
+            ':description' => $description,
+            ':price' => $price,
+            ':image_path' => $imagePath,
+        ]);
+    }
+
     public function delete(int $id): bool
     {
         $stmt = $this->db->prepare('DELETE FROM products WHERE id = :id');

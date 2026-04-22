@@ -6,27 +6,38 @@ $userModel = new User($db);
 $productModel = new Product($db);
 $newsModel = new News($db);
 $contactModel = new Contact($db);
+$commentModel = new Comment($db);
 
 $page = $_GET['page'] ?? 'home';
 $currentUser = $_SESSION['user'] ?? null;
 $isAdmin = isset($currentUser['role']) && $currentUser['role'] === 'admin';
 $message = '';
 $error = '';
+$metaDescription = 'Website công ty doanh nghiệp - quản lý sản phẩm, tin tức, liên hệ.';
+$metaKeywords = 'website doanh nghiệp, sản phẩm, tin tức, liên hệ';
 
 $keywordProduct = trim($_GET['q_product'] ?? '');
 $keywordNews = trim($_GET['q_news'] ?? '');
 $productPage = max(1, intval($_GET['product_page'] ?? 1));
 $newsPage = max(1, intval($_GET['news_page'] ?? 1));
 $contactPage = max(1, intval($_GET['contact_page'] ?? 1));
+$userPage = max(1, intval($_GET['user_page'] ?? 1));
+$adminNewsPage = max(1, intval($_GET['admin_news_page'] ?? 1));
+$commentPage = max(1, intval($_GET['comment_page'] ?? 1));
 
 $publicPerPage = 6;
 $adminPerPage = 10;
 
 $productDetail = null;
 $newsDetail = null;
+$productComments = [];
+$newsComments = [];
 $productTotalPages = 1;
 $newsTotalPages = 1;
 $contactTotalPages = 1;
+$userTotalPages = 1;
+$adminNewsTotalPages = 1;
+$commentTotalPages = 1;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($page === 'register') {
@@ -35,6 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'] ?? '';
         if ($name === '' || $email === '' || $password === '') {
             $error = 'Vui lòng nhập đủ thông tin.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Email không hợp lệ.';
+        } elseif (strlen($password) < 6) {
+            $error = 'Mật khẩu cần có ít nhất 6 ký tự.';
         } elseif ($userModel->register($name, $email, $password)) {
             $message = 'Đăng ký thành công. Vui lòng đăng nhập.';
         } else {
@@ -45,17 +60,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($page === 'login') {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
-        $user = $userModel->login($email, $password);
-        if ($user) {
-            if (($user['status'] ?? 'active') === 'blocked') {
-                $error = 'Tài khoản của bạn đang bị khóa.';
-            } else {
-                $_SESSION['user'] = $user;
-                header('Location: index.php?page=home');
-                exit;
-            }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Email không hợp lệ.';
         } else {
-            $error = 'Email hoặc mật khẩu không đúng.';
+            $user = $userModel->login($email, $password);
+            if ($user) {
+                if (($user['status'] ?? 'active') === 'blocked') {
+                    $error = 'Tài khoản của bạn đang bị khóa.';
+                } else {
+                    $_SESSION['user'] = $user;
+                    header('Location: index.php?page=home');
+                    exit;
+                }
+            } else {
+                $error = 'Email hoặc mật khẩu không đúng.';
+            }
         }
     }
 
@@ -68,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!is_dir(UPLOAD_DIR)) {
                     mkdir(UPLOAD_DIR, 0755, true);
                 }
-                $filename = basename($_FILES['avatar']['name']);
+                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($_FILES['avatar']['name']));
                 $targetFile = UPLOAD_DIR . $filename;
                 if (move_uploaded_file($_FILES['avatar']['tmp_name'], $targetFile)) {
                     $avatarPath = 'uploads/' . $filename;
@@ -125,6 +144,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if (($page === 'product_detail' || $page === 'news_detail') && $currentUser && (($_POST['action'] ?? '') === 'add_comment')) {
+        $targetType = $page === 'product_detail' ? 'product' : 'news';
+        $targetId = intval($_POST['target_id'] ?? 0);
+        $rating = intval($_POST['rating'] ?? 0);
+        $content = trim($_POST['content'] ?? '');
+
+        if ($targetType === 'product' && !$productModel->getById($targetId)) {
+            $error = 'Sản phẩm không tồn tại để đánh giá.';
+        } elseif ($targetType === 'news' && !$newsModel->getById($targetId)) {
+            $error = 'Bài viết không tồn tại để bình luận.';
+        } elseif ($rating < 1 || $rating > 5 || $content === '') {
+            $error = 'Vui lòng nhập đủ điểm đánh giá (1-5) và nội dung bình luận.';
+        } elseif ($commentModel->create((int) $currentUser['id'], $targetType, $targetId, $rating, $content)) {
+            $message = 'Đã gửi bình luận/đánh giá thành công.';
+        } else {
+            $error = 'Không thể gửi bình luận/đánh giá.';
+        }
+    }
+
     if ($page === 'admin' && $isAdmin && isset($_POST['action'])) {
         if ($_POST['action'] === 'add_product') {
             $title = trim($_POST['title'] ?? '');
@@ -135,9 +173,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!is_dir(UPLOAD_DIR)) {
                     mkdir(UPLOAD_DIR, 0755, true);
                 }
-                $targetFile = UPLOAD_DIR . basename($_FILES['image']['name']);
+                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($_FILES['image']['name']));
+                $targetFile = UPLOAD_DIR . $filename;
                 if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
-                    $imagePath = 'uploads/' . basename($_FILES['image']['name']);
+                    $imagePath = 'uploads/' . $filename;
                 }
             }
             if ($title && $description && $price > 0) {
@@ -148,9 +187,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        if ($_POST['action'] === 'update_product') {
+            $productId = intval($_POST['product_id'] ?? 0);
+            $title = trim($_POST['title'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $price = floatval($_POST['price'] ?? 0);
+
+            $existing = $productModel->getById($productId);
+            $imagePath = $existing['image_path'] ?? '';
+
+            if (!empty($_FILES['image']['name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
+                if (!is_dir(UPLOAD_DIR)) {
+                    mkdir(UPLOAD_DIR, 0755, true);
+                }
+                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($_FILES['image']['name']));
+                $targetFile = UPLOAD_DIR . $filename;
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+                    $imagePath = 'uploads/' . $filename;
+                }
+            }
+
+            if ($productId <= 0 || !$existing) {
+                $error = 'Sản phẩm không hợp lệ.';
+            } elseif ($title === '' || $description === '' || $price <= 0) {
+                $error = 'Vui lòng nhập đầy đủ thông tin để cập nhật sản phẩm.';
+            } elseif ($productModel->update($productId, $title, $description, $price, $imagePath)) {
+                $message = 'Đã cập nhật sản phẩm.';
+            } else {
+                $error = 'Không thể cập nhật sản phẩm.';
+            }
+        }
+
         if ($_POST['action'] === 'delete_product' && isset($_POST['product_id'])) {
             $productModel->delete(intval($_POST['product_id']));
             $message = 'Sản phẩm đã được xóa.';
+        }
+
+        if ($_POST['action'] === 'add_news') {
+            $title = trim($_POST['title'] ?? '');
+            $content = trim($_POST['content'] ?? '');
+            $keyword = trim($_POST['keyword'] ?? '');
+            $metaDescription = trim($_POST['meta_description'] ?? '');
+
+            if ($title === '' || $content === '') {
+                $error = 'Vui lòng nhập tiêu đề và nội dung tin tức.';
+            } elseif ($newsModel->create($title, $content, $keyword, $metaDescription)) {
+                $message = 'Đã thêm tin tức mới.';
+            } else {
+                $error = 'Không thể thêm tin tức.';
+            }
+        }
+
+        if ($_POST['action'] === 'update_news') {
+            $newsId = intval($_POST['news_id'] ?? 0);
+            $title = trim($_POST['title'] ?? '');
+            $content = trim($_POST['content'] ?? '');
+            $keyword = trim($_POST['keyword'] ?? '');
+            $metaDescription = trim($_POST['meta_description'] ?? '');
+
+            if ($newsId <= 0 || !$newsModel->getById($newsId)) {
+                $error = 'Tin tức không hợp lệ.';
+            } elseif ($title === '' || $content === '') {
+                $error = 'Vui lòng nhập tiêu đề và nội dung để cập nhật tin tức.';
+            } elseif ($newsModel->update($newsId, $title, $content, $keyword, $metaDescription)) {
+                $message = 'Đã cập nhật tin tức.';
+            } else {
+                $error = 'Không thể cập nhật tin tức.';
+            }
+        }
+
+        if ($_POST['action'] === 'delete_news') {
+            $newsId = intval($_POST['news_id'] ?? 0);
+            if ($newsId <= 0 || !$newsModel->delete($newsId)) {
+                $error = 'Không thể xóa tin tức.';
+            } else {
+                $message = 'Đã xóa tin tức.';
+            }
         }
 
         if ($_POST['action'] === 'update_contact_status') {
@@ -204,6 +316,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Không thể xóa người dùng (không áp dụng cho tài khoản admin).';
             }
         }
+
+        if ($_POST['action'] === 'update_comment_status') {
+            $commentId = intval($_POST['comment_id'] ?? 0);
+            $status = trim($_POST['status'] ?? '');
+
+            if (!$commentModel->updateStatus($commentId, $status)) {
+                $error = 'Không thể cập nhật trạng thái bình luận.';
+            } else {
+                $message = 'Đã cập nhật trạng thái bình luận.';
+            }
+        }
+
+        if ($_POST['action'] === 'delete_comment') {
+            $commentId = intval($_POST['comment_id'] ?? 0);
+
+            if (!$commentModel->deleteById($commentId)) {
+                $error = 'Không thể xóa bình luận.';
+            } else {
+                $message = 'Đã xóa bình luận.';
+            }
+        }
     }
 }
 
@@ -217,6 +350,8 @@ $products = $productModel->getAll();
 $news = $newsModel->getAll();
 $contacts = $isAdmin ? $contactModel->getAll() : [];
 $users = $isAdmin ? $userModel->getAll() : [];
+$adminNews = $isAdmin ? $newsModel->getAll() : [];
+$adminComments = $isAdmin ? $commentModel->getPagedForAdmin($adminPerPage, 0) : [];
 
 if ($page === 'products') {
     $totalProducts = $productModel->countSearch($keywordProduct);
@@ -232,6 +367,10 @@ if ($page === 'product_detail') {
     $productDetail = $productId > 0 ? $productModel->getById($productId) : null;
     if (!$productDetail) {
         $error = 'Không tìm thấy sản phẩm yêu cầu.';
+    } else {
+        $productComments = $commentModel->getApprovedByTarget('product', (int) $productDetail['id']);
+        $metaDescription = substr(trim(strip_tags($productDetail['description'])), 0, 150);
+        $metaKeywords = 'sản phẩm, dịch vụ, doanh nghiệp';
     }
 }
 
@@ -249,6 +388,14 @@ if ($page === 'news_detail') {
     $newsDetail = $newsId > 0 ? $newsModel->getById($newsId) : null;
     if (!$newsDetail) {
         $error = 'Không tìm thấy bài viết yêu cầu.';
+    } else {
+        $newsComments = $commentModel->getApprovedByTarget('news', (int) $newsDetail['id']);
+        $metaDescription = trim($newsDetail['meta_description'] ?? '') !== ''
+            ? trim($newsDetail['meta_description'])
+            : substr(trim(strip_tags($newsDetail['content'])), 0, 150);
+        $metaKeywords = trim($newsDetail['keyword'] ?? '') !== ''
+            ? trim($newsDetail['keyword'])
+            : 'tin tức doanh nghiệp';
     }
 }
 
@@ -259,6 +406,27 @@ if ($page === 'admin' && $isAdmin) {
         $contactPage = $contactTotalPages;
     }
     $contacts = $contactModel->getPaged($adminPerPage, ($contactPage - 1) * $adminPerPage);
+
+    $userTotal = $userModel->countAll();
+    $userTotalPages = max(1, (int) ceil($userTotal / $adminPerPage));
+    if ($userPage > $userTotalPages) {
+        $userPage = $userTotalPages;
+    }
+    $users = $userModel->getPaged($adminPerPage, ($userPage - 1) * $adminPerPage);
+
+    $adminNewsTotal = $newsModel->countAll();
+    $adminNewsTotalPages = max(1, (int) ceil($adminNewsTotal / $adminPerPage));
+    if ($adminNewsPage > $adminNewsTotalPages) {
+        $adminNewsPage = $adminNewsTotalPages;
+    }
+    $adminNews = $newsModel->getPaged($adminPerPage, ($adminNewsPage - 1) * $adminPerPage);
+
+    $commentTotal = $commentModel->countAll();
+    $commentTotalPages = max(1, (int) ceil($commentTotal / $adminPerPage));
+    if ($commentPage > $commentTotalPages) {
+        $commentPage = $commentTotalPages;
+    }
+    $adminComments = $commentModel->getPagedForAdmin($adminPerPage, ($commentPage - 1) * $adminPerPage);
 }
 
 switch ($page) {

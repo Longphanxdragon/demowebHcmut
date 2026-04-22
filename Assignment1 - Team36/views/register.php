@@ -15,7 +15,7 @@
           </div>
           <div class="form-group">
             <label for="password">Mật khẩu</label>
-            <input type="password" class="form-control" id="password" name="password" required>
+            <input type="password" class="form-control" id="password" name="password" minlength="6" required>
           </div>
           <button type="submit" class="btn btn-success">Đăng ký</button>
         </form>

@@ -29,7 +29,7 @@ if ($action === 'add_product') {
         if (!is_dir(UPLOAD_DIR)) {
             mkdir(UPLOAD_DIR, 0755, true);
         }
-        $filename = basename($_FILES['image']['name']);
+        $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($_FILES['image']['name']));
         $targetFile = UPLOAD_DIR . $filename;
         if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
             $imagePath = 'uploads/' . $filename;

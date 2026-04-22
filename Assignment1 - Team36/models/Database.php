@@ -55,6 +55,8 @@ class Database
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             content TEXT NOT NULL,
+            keyword TEXT,
+            meta_description TEXT,
             created_at DATETIME NOT NULL
         );
 
@@ -66,6 +68,18 @@ class Database
             message TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'new',
             created_at DATETIME NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            target_type TEXT NOT NULL,
+            target_id INTEGER NOT NULL,
+            rating INTEGER NOT NULL,
+            content TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'approved',
+            created_at DATETIME NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         );
 
         INSERT OR IGNORE INTO users (id, name, email, password, role, status, created_at) VALUES
@@ -80,6 +94,26 @@ class Database
         ('Tối ưu hóa chuyển đổi đơn hàng', 'Nâng cấp thiết kế và quản lý sản phẩm nhằm tăng tỷ lệ chuyển đổi.', datetime('now'));
         ";
         $this->pdo->exec($sql);
+
+        // Lightweight migration for existing SQLite files created before new columns.
+        if (!$this->columnExists('news', 'keyword')) {
+            $this->pdo->exec('ALTER TABLE news ADD COLUMN keyword TEXT');
+        }
+        if (!$this->columnExists('news', 'meta_description')) {
+            $this->pdo->exec('ALTER TABLE news ADD COLUMN meta_description TEXT');
+        }
+    }
+
+    private function columnExists(string $table, string $column): bool
+    {
+        $stmt = $this->pdo->query("PRAGMA table_info($table)");
+        $columns = $stmt->fetchAll();
+        foreach ($columns as $col) {
+            if (($col['name'] ?? '') === $column) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

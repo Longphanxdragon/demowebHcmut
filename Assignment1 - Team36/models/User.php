@@ -59,6 +59,21 @@ class User
         return $stmt->fetchAll();
     }
 
+    public function getPaged(int $limit, int $offset): array
+    {
+        $stmt = $this->db->prepare('SELECT id, name, email, role, status, created_at FROM users ORDER BY created_at DESC LIMIT :limit OFFSET :offset');
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function countAll(): int
+    {
+        $stmt = $this->db->query('SELECT COUNT(*) FROM users');
+        return (int) $stmt->fetchColumn();
+    }
+
     public function updateStatus(int $id, string $status): bool
     {
         if (!in_array($status, ['active', 'blocked'], true)) {

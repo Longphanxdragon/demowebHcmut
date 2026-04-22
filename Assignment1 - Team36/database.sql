@@ -28,8 +28,22 @@ CREATE TABLE IF NOT EXISTS news (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
+  keyword VARCHAR(255) NULL,
+  meta_description VARCHAR(255) NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS comments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  target_type ENUM('product', 'news') NOT NULL,
+  target_id INT NOT NULL,
+  rating TINYINT NOT NULL,
+  content TEXT NOT NULL,
+  status ENUM('approved', 'hidden') NOT NULL DEFAULT 'approved',
+  created_at DATETIME NOT NULL,
+  CONSTRAINT fk_comments_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS contacts (

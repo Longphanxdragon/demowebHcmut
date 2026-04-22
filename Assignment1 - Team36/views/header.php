@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo htmlspecialchars($pageTitle ?? APP_NAME); ?></title>
+  <meta name="description" content="<?php echo htmlspecialchars($metaDescription ?? 'Website công ty doanh nghiệp'); ?>">
+  <meta name="keywords" content="<?php echo htmlspecialchars($metaKeywords ?? 'website doanh nghiệp'); ?>">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Charm&family=Texturina:wght@200&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.5.9/dist/css/uikit.min.css" />

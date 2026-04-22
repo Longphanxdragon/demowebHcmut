@@ -1,211 +1,201 @@
 \documentclass[12pt,a4paper]{article}
+
 \usepackage[a4paper,margin=2.2cm]{geometry}
-\usepackage{fontspec}
-\usepackage{polyglossia}
-\setdefaultlanguage{vietnamese}
-\setmainfont{Times New Roman}
+\usepackage{iftex}
+
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T5]{fontenc}
+  \usepackage[vietnamese]{babel}
+\else
+  \usepackage{fontspec}
+  \usepackage{polyglossia}
+  \setdefaultlanguage{vietnamese}
+  \setmainfont{TeX Gyre Termes}
+\fi
+
 \usepackage{setspace}
 \usepackage{graphicx}
 \usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{array}
-\usepackage{hyperref}
-\usepackage{xcolor}
 \usepackage{enumitem}
-\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
-\setstretch{1.25}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
 
-\title{\textbf{B\'AO C\'AO B\`AI T\^AP L\'ON L\^AP TR\`INH WEB}\\
+\setstretch{1.25}
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
+
+\title{\textbf{BÁO CÁO BÀI TẬP LỚN LẬP TRÌNH WEB}\\
 HK2 2025--2026\\
-\large Thi\'et k\'e giao di\^en v\`a x\^ay d\d{u}ng c\'ac t\'inh n\u{a}ng c\u{o} b\h{a}n cho website c\^ong ty -- doanh nghi\^ep}
-\author{Nh\'om: Team36 \\
-Email li\^en h\d{e}: \texttt{team36-web@hcmut.edu.vn}}
-\date{Th\'ang 04 n\u{a}m 2026}
+\large Thiết kế giao diện và xây dựng các tính năng cơ bản cho website công ty -- doanh nghiệp}
+\author{Nhóm: Team36\\
+Email liên hệ: team36-web@hcmut.edu.vn}
+\date{Tháng 04 năm 2026}
 
 \begin{document}
+
 \maketitle
 \tableofcontents
 \newpage
 
-\section{Gi\h{o}i thi\d{e}u \`e t\`ai}
-\subsection{B\`oi c\h{a}nh}
-\`E t\`ai y\^eu c\`au x\^ay d\d{u}ng website c\^ong ty -- doanh nghi\^ep b\`ang c\'ac c\^ong ngh\d{e} \h{o}n t\d{a}ng trong m\^on h\d{o}c: HTML5, CSS3, Javascript, PHP, PHP \& MySQL.
+\section{Giới thiệu đề tài}
 
-\subsection{M\d{u}c ti\^eu th\d{u}c hi\d{e}n năm 2026}
-\begin{itemize}[leftmargin=*]
-  \item Chu\h{a}n h\'oa giao di\^en public c\'ac trang c\u{o} b\h{a}n theo \`e.
-  \item B\h{o} sung lu\`ong ng\u{o}\`i d\`ung: kh\'ach, th\`anh vi\^en, qu\h{a}n tr\d{i}.
-  \item T\u{a}ng c\u{u}\`ong c\'ac t\'inh n\u{a}ng b\u{a}t bu\d{o}c: t\`im ki\'em, ph\^an trang, qu\h{a}n l\'y li\^en h\d{e}, qu\h{a}n l\'y ng\u{o}\`i d\`ung c\u{o} b\h{a}n cho admin.
-  \item Vi\'et b\'ao c\'ao minh b\d{a}ch theo \`ung hi\d{e}n tr\d{a}ng code.
+\subsection{Bối cảnh}
+Đề tài yêu cầu xây dựng website công ty -- doanh nghiệp bằng các công nghệ đã học: HTML5, CSS3, Javascript, PHP và PHP \& MySQL. Hệ thống phải đáp ứng các vai trò người dùng gồm khách, thành viên, quản trị viên và tuân thủ các ràng buộc của môn học (không dùng PHP framework/CMF/CMS).
+
+\subsection{Mục tiêu thực hiện}
+\begin{itemize}
+  \item Chuẩn hóa các trang giao diện public theo đúng đề.
+  \item Hoàn thiện luồng người dùng: khách, thành viên, quản trị viên.
+  \item Đảm bảo các tính năng bắt buộc: tìm kiếm, phân trang, quản lý liên hệ, quản lý người dùng.
+  \item Trình bày báo cáo bám sát mã nguồn thực tế, không nêu tính năng chưa có code.
 \end{itemize}
 
-\section{C\^ong ngh\d{e} v\`a ki\h{e}n tr\'uc}
-\subsection{C\^ong ngh\d{e} s\h{u} d\d{u}ng}
-\begin{itemize}[leftmargin=*]
-  \item Frontend: HTML5, CSS3, Bootstrap 4, Javascript (Fetch API).
-  \item Backend: PHP thu\`an (kh\^ong d\`ung PHP framework).
-  \item Database: SQLite trong m\^oi tr\u{o}\`ng demo; c\'o script MySQL tham chi\'eu trong \texttt{database.sql}.
+\section{Công nghệ và kiến trúc}
+
+\subsection{Công nghệ sử dụng}
+\begin{itemize}
+  \item Frontend: HTML5, CSS3, Bootstrap 4, Javascript.
+  \item Backend: PHP thuần theo kiểu MVC nhẹ.
+  \item Database: SQLite cho môi trường demo; có tệp tham chiếu cấu trúc MySQL trong database.sql.
 \end{itemize}
 
-\subsection{M\^o h\`inh}
-M\^o h\`inh MVC nh\d{e}: 
-\begin{itemize}[leftmargin=*]
-  \item Model: truy v\'an d\~u li\d{e}u (User, Product, News, Contact).
-  \item View: giao di\^en c\'ac trang public, profile, admin.
-  \item Controller: \texttt{index.php} \d{i}\`eu ph\'oi request.
+\subsection{Mô hình tổ chức mã nguồn}
+\begin{itemize}
+  \item Model: thao tác dữ liệu (User, Product, News, Contact).
+  \item View: giao diện public, tài khoản, quản trị.
+  \item Controller: điều phối request qua tệp index.php.
 \end{itemize}
 
-\section{Thi\'et k\'e CSDL t\'om t\u{a}t}
-\begin{longtable}{p{0.23\textwidth}p{0.72\textwidth}}
+\section{Thiết kế cơ sở dữ liệu tóm tắt}
+\begin{longtable}{p{0.24\textwidth}p{0.71\textwidth}}
 \toprule
-B\h{a}ng & Vai tr\`o \\
+Bảng & Vai trò \\
 \midrule
-users & L\u{u} t\`ai kho\h{a}n, vai tr\`o (member/admin), tr\d{a}ng th\'ai, avatar \\
-products & L\u{u} s\h{a}n ph\h{a}m/d\d{i}ch v\d{u}, gi\'a, m\^o t\h{a}, h\`inh \h{a}nh \\
-news & L\u{u} b\`ai vi\'et tin t\u{u}c \\
-contacts & L\u{u} li\^en h\d{e} kh\'ach h\`ang v\`a tr\d{a}ng th\'ai x\h{u} l\'y (new/read/replied) \\
+users & Lưu tài khoản, vai trò, trạng thái, avatar \\
+products & Lưu thông tin sản phẩm/dịch vụ, giá, mô tả, hình ảnh \\
+news & Lưu bài viết tin tức \\
+contacts & Lưu liên hệ khách hàng và trạng thái xử lý (new/read/replied) \\
 \bottomrule
 \end{longtable}
 
-\section{T\'inh n\u{a}ng hi\d{e}n th\d{u}c (b\'am s\'at \`e)}
-\subsection{Kh\'ach}
-\begin{itemize}[leftmargin=*]
-  \item Xem c\'ac trang public: trang ch\u{u}, gi\h{o}i thi\d{e}u, s\h{a}n ph\h{a}m, b\h{a}ng gi\'a, tin t\u{u}c, li\^en h\d{e}, FAQ.
-  \item T\`im ki\'em s\h{a}n ph\h{a}m theo t\`u kh\'oa.
-  \item T\`im ki\'em tin t\u{u}c theo t\`u kh\'oa.
-  \item Xem trang chi ti\'et s\h{a}n ph\h{a}m và chi ti\'et tin t\u{u}c.
-  \item G\h{u}i form li\^en h\d{e} (c\'o validate client/server).
+\section{Các tính năng đã hiện thực}
+
+\subsection{Nhóm khách}
+\begin{itemize}
+  \item Xem các trang public: trang chủ, giới thiệu, sản phẩm, bảng giá, liên hệ, FAQ, tin tức.
+  \item Tìm kiếm sản phẩm theo từ khóa.
+  \item Tìm kiếm tin tức theo từ khóa.
+  \item Xem trang chi tiết sản phẩm và chi tiết tin tức.
+  \item Gửi form liên hệ (có kiểm tra dữ liệu đầu vào).
 \end{itemize}
 
-\subsection{Th\`anh vi\^en}
-\begin{itemize}[leftmargin=*]
-  \item \DJ \u{a}ng k\'y / \DJ \u{a}ng nh\d{a}p.
-  \item C\d{a}p nh\d{a}t th\^ong tin c\'a nh\^an (t\^en, avatar).
-  \item \DJ \h{o}i m\d{a}t kh\h{a}u (ki\h{e}m tra m\d{a}t kh\h{a}u c\~u, x\'ac nh\d{a}n m\d{a}t kh\h{a}u m\'oi).
+\subsection{Nhóm thành viên}
+\begin{itemize}
+  \item Đăng ký, đăng nhập.
+  \item Cập nhật thông tin cá nhân.
+  \item Cập nhật avatar.
+  \item Đổi mật khẩu (có kiểm tra mật khẩu cũ và xác nhận mật khẩu mới).
 \end{itemize}
 
-\subsection{Qu\h{a}n tr\d{i} vi\^en}
-\begin{itemize}[leftmargin=*]
-  \item Qu\h{a}n l\'y s\h{a}n ph\h{a}m: th\^em/x\'oa (AJAX).
-  \item Qu\h{a}n l\'y th\`anh vi\^en: xem danh s\'ach, kho\'a/m\h{o} kho\'a, reset m\d{a}t kh\h{a}u, x\'oa (kh\^ong \h{a}nh h\h{u}\h{o}ng t\`ai kho\h{a}n admin). 
-  \item Qu\h{a}n l\'y li\^en h\d{e}: c\d{a}p nh\d{a}t tr\d{a}ng th\'ai new/read/replied.
-  \item Ph\^an trang danh s\'ach li\^en h\d{e} tr\^en trang admin.
-  \item Ki\h{e}m tra d\~u li\d{e}u action admin \h{o} m\d{u}c c\u{o} b\h{a}n (ID h\h{o}p l\d{e}, tr\h{a}ng th\'ai h\h{o}p l\d{e}, m\d{a}t kh\h{a}u m\'oi \ge 6 k\'y t\d{u}).
+\subsection{Nhóm quản trị viên}
+\begin{itemize}
+  \item Quản lý sản phẩm: xem, thêm, xóa.
+  \item Quản lý thành viên: xem danh sách, khóa/mở khóa, reset mật khẩu, xóa.
+  \item Quản lý liên hệ khách hàng: cập nhật trạng thái new/read/replied.
+  \item Phân trang danh sách liên hệ trong khu vực admin.
 \end{itemize}
 
-\subsection{Ph\^an trang}
-\begin{itemize}[leftmargin=*]
-  \item S\h{a}n ph\h{a}m: ph\^an trang theo \texttt{product\_page}.
-  \item Tin t\u{u}c: ph\^an trang theo \texttt{news\_page}.
-  \item Li\^en h\d{e} admin: ph\^an trang theo \texttt{contact\_page}.
+\subsection{Phân trang}
+\begin{itemize}
+  \item Danh sách sản phẩm.
+  \item Danh sách tin tức.
+  \item Danh sách liên hệ trong admin.
 \end{itemize}
 
-\section{B\h{a}o m\d{a}t c\u{o} b\h{a}n v\`a SEO}
-\subsection{B\h{a}o m\d{a}t}
-\begin{itemize}[leftmargin=*]
-  \item M\d{a}t kh\h{a}u d\`ung \texttt{password\_hash}/\texttt{password\_verify}.
-  \item Escape output b\`ang \texttt{htmlspecialchars} \d{e} gi\h{a}m XSS.
-  \item D\`ung prepared statement khi truy v\'an CSDL.
-  \item Ph\^an quy\`en theo role cho trang admin.
-  \item Ch\h{a}n thao t\'ac nguy hi\h{e}m: kh\^ong cho admin t\d{u} kho\'a/x\'oa ch\'inh t\`ai kho\h{a}n \d{a}ng \d{d}\u{a}ng nh\d{a}p.
+\section{Bảo mật cơ bản và SEO cơ bản}
+
+\subsection{Bảo mật cơ bản}
+\begin{itemize}
+  \item Mật khẩu được băm bằng password\_hash và xác thực bằng password\_verify.
+  \item Escape output bằng htmlspecialchars để giảm rủi ro XSS.
+  \item Dùng prepared statement khi truy vấn cơ sở dữ liệu.
+  \item Kiểm soát quyền theo role ở khu vực quản trị.
 \end{itemize}
 
-\subsection{SEO c\u{o} b\h{a}n}
-\begin{itemize}[leftmargin=*]
-  \item Thi\'et l\d{a}p \texttt{title} theo t\`ung trang.
-  \item C\'au tr\'uc n\d{o}i dung c\'o heading r\~o r\`ang.
-  \item URL c\'o tham s\'o trang/t\`im ki\'em ph\^an bi\d{e}t theo ch\u{u}c n\u{a}ng.
+\subsection{SEO cơ bản}
+\begin{itemize}
+  \item Thiết lập title theo từng trang.
+  \item Cấu trúc nội dung có heading rõ ràng.
+  \item URL có tham số phân biệt chức năng tìm kiếm và phân trang.
 \end{itemize}
 
-\section{Ki\h{e}m th\h{u} v\`a m\^oi tr\u{o}\`ng ch\d{a}y}
-\subsection{M\^oi tr\u{o}\`ng}
-\begin{itemize}[leftmargin=*]
-  \item PHP \ge 7.0 (khuy\'en ngh\d{i} PHP 8.x).
-  \item Web server: Apache/Nginx (ho\d{a}c \texttt{php -S}).
-  \item CSDL: SQLite file ho\d{a}c MySQL (theo script tham chi\'eu).
+\section{Môi trường chạy và cách cài đặt}
+
+\subsection{Yêu cầu môi trường}
+\begin{itemize}
+  \item PHP từ phiên bản 7.0 trở lên (khuyến nghị PHP 8.x).
+  \item Web server Apache/Nginx hoặc chạy nhanh bằng PHP built-in server.
+  \item Cơ sở dữ liệu SQLite hoặc MySQL theo kịch bản triển khai.
 \end{itemize}
 
-\subsection{C\'ach ch\d{a}y nhanh}
-\begin{enumerate}[leftmargin=*]
-  \item V\`ao th\u{u} m\d{u}c \texttt{Assignment1 - Team36}.
-  \item Ch\d{a}y \texttt{php -S localhost:8000}.
-  \item M\h{o} \texttt{/index.php} tr\^en tr\`inh duy\d{e}t.
-  \item T\`ai kho\h{a}n admin m\~au: \texttt{admin@vng.com}.
+\subsection{Cách chạy nhanh}
+\begin{enumerate}
+  \item Vào thư mục Assignment1 - Team36.
+  \item Chạy lệnh php -S localhost:8000.
+  \item Mở trình duyệt tại đường dẫn /index.php.
+  \item Tài khoản admin mẫu: admin@vng.com.
 \end{enumerate}
 
-\section{\DJ \'anh gi\'a m\u{u}c \d{o} b\'am \`e}
-\subsection{\DJ \d{o}i chi\'eu tr\d{u}c ti\'ep v\'oi y\^eu c\`au \d{e} b\`ai}
-\begin{longtable}{p{0.38\textwidth}p{0.19\textwidth}p{0.38\textwidth}}
+\section{Đối chiếu theo yêu cầu đề bài}
+
+\begin{longtable}{p{0.40\textwidth}p{0.20\textwidth}p{0.35\textwidth}}
 \toprule
-Y\^eu c\`au \d{e} b\`ai & Tr\d{a}ng th\'ai & Ghi ch\'u b\'am code hi\d{e}n t\d{a}i \\
+Yêu cầu đề bài & Trạng thái & Ghi chú theo mã nguồn hiện tại \\
 \midrule
-Trang public c\u{o} b\h{a}n (home/about/products/pricing/contact/faq/news) & \textbf{\DJ \~a c\'o} & Routing \d{a}\`ay \d{u} trong controller ch\'inh, c\'o giao di\^en t\u{o}ng \u{u}ng cho t\`ung trang. \\
-\DJ \u{a}ng k\'y/\DJ \u{a}ng nh\d{a}p b\`ang PHP + CSDL & \textbf{\DJ \~a c\'o} & Lu\`ong register/login ho\d{a}t \d{d}\d{o}ng, m\d{a}t kh\h{a}u b\u{a}m chu\h{a}n \texttt{password\_hash}/\texttt{password\_verify}. \\
-Th\`anh vi\^en c\d{a}p nh\d{a}t h\`o s\o, avatar, \d{o}i m\d{a}t kh\h{a}u & \textbf{\DJ \~a c\'o} & C\'o upload avatar l\^en server, c\'o ki\h{e}m tra m\d{a}t kh\h{a}u c\~u v\`a x\'ac nh\d{a}n m\d{a}t kh\h{a}u m\'oi. \\
-T\`im ki\'em t\`ai nguy\^en (s\h{a}n ph\h{a}m/tin t\u{u}c) & \textbf{\DJ \~a c\'o} & \DJ \~a c\'o t\`im ki\'em theo t\`u kh\'oa, truy v\'an prepared statement. \\
-Ph\^an trang d\~u li\d{e}u d\`ai & \textbf{\DJ \~a c\'o m\d{o}t ph\`an} & \DJ \~a c\'o cho products, news, contacts admin; ch\u{u}a ph\^an trang danh s\'ach user/admin. \\
-Qu\h{a}n l\'y user cho admin (xem/s\h{u}a/tr\d{a}ng th\'ai/reset/x\'oa) & \textbf{\DJ \~a c\'o m\d{o}t ph\`an} & \DJ \~a c\'o xem + kho\'a/m\h{o} kho\'a + reset + x\'oa user th\`anh vi\^en; ch\u{u}a c\'o form s\h{u}a th\^ong tin user chi ti\'et. \\
-Qu\h{a}n l\'y li\^en h\d{e} kh\'ach h\`ang & \textbf{\DJ \~a c\'o} & \DJ \~a c\'o xem + c\d{a}p nh\d{a}t tr\d{a}ng th\'ai \texttt{new/read/replied} + ph\^an trang. \\
-Qu\h{a}n l\'y s\h{a}n ph\h{a}m (xem/th\^em/s\h{u}a/x\'oa) & \textbf{\DJ \~a c\'o m\d{o}t ph\`an} & \DJ \~a c\'o xem + th\^em + x\'oa; ch\u{u}a c\'o ch\h{u}c n\u{a}ng s\h{u}a. \\
-Qu\h{a}n l\'y tin t\u{u}c (xem/th\^em/s\h{u}a/x\'oa, SEO metadata) & \textbf{C\`on thi\'eu} & Hi\d{e}n m\'oi c\'o hi\h{e}n th\d{i} public + t\`im ki\'em/chi ti\'et, ch\u{u}a c\'o module admin. \\
-B\`inh lu\d{a}n/\d{a}nh gi\'a c\u{u}a th\`anh vi\^en & \textbf{C\`on thi\'eu} & Ch\u{u}a c\'o b\h{a}ng d\~u li\d{e}u v\`a giao di\^en t\u{o}ng \u{u}ng. \\
-Gi\h{o} h\`ang/\d{o}n h\`ang (n\'eu \'ap d\d{u}ng) & \textbf{C\`on thi\'eu} & Ch\u{u}a c\'o module gi\h{o} h\`ang v\`a \d{o}n h\`ang. \\
-Ki\h{e}m tra d\~u li\d{e}u \d{a}\`au v\`ao client + server cho c\'ac form & \textbf{\DJ \~a c\'o m\d{o}t ph\`an} & Client side d\`ung \texttt{required/type/minlength}; server side \d{a}\`ay \d{u} cho c\'ac lu\`ong ch\'inh, ch\u{u}a chu\h{a}n h\'oa t\h{a}t c\h{a} form theo m\~ot b\o quy t\u{a}c chung. \\
+Trang public cơ bản (home/about/products/pricing/contact/faq/news) & Đã có & Có routing và giao diện tương ứng cho từng trang. \\
+Đăng ký/Đăng nhập bằng PHP + CSDL & Đã có & Luồng hoạt động ổn định, mật khẩu băm đúng chuẩn. \\
+Cập nhật hồ sơ, mật khẩu, avatar & Đã có & Có luồng cập nhật hồ sơ và upload avatar. \\
+Tìm kiếm sản phẩm/tin tức & Đã có & Tìm kiếm theo từ khóa ở phần public. \\
+Phân trang dữ liệu dài & Đã có một phần & Đã có cho products, news, contacts; chưa đồng bộ toàn bộ trang quản trị. \\
+Quản lý user cho admin (xem/sửa/trạng thái/reset/xóa) & Đã có một phần & Đã có xem + khóa/mở + reset + xóa; chưa có chỉnh sửa chi tiết hồ sơ user trong admin. \\
+Quản lý liên hệ khách hàng & Đã có & Có xem danh sách và cập nhật trạng thái xử lý. \\
+Quản lý sản phẩm (xem/thêm/sửa/xóa) & Đã có một phần & Đã có xem + thêm + xóa; còn thiếu sửa đầy đủ. \\
+Quản lý tin tức admin (xem/thêm/sửa/xóa + metadata) & Còn thiếu & Chưa có module quản trị tin tức đầy đủ. \\
+Bình luận/đánh giá của thành viên & Còn thiếu & Chưa có bảng dữ liệu và giao diện tương ứng. \\
+Giỏ hàng/đơn hàng (nếu áp dụng) & Còn thiếu & Chưa triển khai trong phiên bản hiện tại. \\
 \bottomrule
 \end{longtable}
 
-\subsection{Nh\d{a}n x\'et trung th\d{u}c theo code hi\d{e}n t\d{a}i}
-Nh\'om \d{a} ho\`an th\`anh ph\`an n\`en t\h{a}ng cho website doanh nghi\^ep theo m\^o h\`inh MVC nh\d{e}: routing, auth, profile, public pages, search, pagination c\u{o} b\h{a}n, admin contacts, admin user management m\d{u}c c\u{o} b\h{a}n. Tuy nhi\^en, so v\'oi checklist \d{e} b\`ai, c\'ac h\d{a}ng m\d{u}c ch\u{u}a \d{u} c\`an \u{u}u ti\^en tri\h{e}n khai l\`a: module tin t\u{u}c admin, module b\`inh lu\d{a}n/\d{a}nh gi\'a, module gi\h{o} h\`ang/\d{o}n h\`ang, v\`a m\h{u}c \d{o} ph\^an trang cho to\`an b\d{o} danh s\'ach qu\h{a}n tr\d{i}.
+\section{Hạng mục ưu tiên bổ sung}
 
-\begin{longtable}{p{0.62\textwidth}p{0.33\textwidth}}
-\toprule
-Y\^eu c\`au trong \`e & Tr\d{a}ng th\'ai hi\d{e}n t\d{a}i \\
-\midrule
-Trang public c\u{o} b\h{a}n (home/about/products/pricing/contact/faq/news) & \textbf{\DJ \~a c\'o} \\
-\DJ \u{a}ng k\'y/\DJ \u{a}ng nh\d{a}p & \textbf{\DJ \~a c\'o} \\
-Th\`anh vi\^en \d{o}i th\^ong tin, m\d{a}t kh\h{a}u, avatar & \textbf{\DJ \~a c\'o} \\
-T\`im ki\'em s\h{a}n ph\h{a}m/tin t\u{u}c & \textbf{\DJ \~a c\'o} \\
-Ph\^an trang danh s\'ach d\`ai & \textbf{\DJ \~a c\'o} \\
-Admin qu\h{a}n l\'y li\^en h\d{e} + tr\d{a}ng th\'ai x\h{u} l\'y & \textbf{\DJ \~a c\'o} \\
-Admin qu\h{a}n l\'y user (xem/kh\'oa/m\h{o} kho\'a/reset/x\'oa) & \textbf{\DJ \~a c\'o c\u{o} b\h{a}n} \\
-B\`inh lu\d{a}n/\d{a}nh gi\'a & \textbf{C\`on thi\'eu} \\
-Gi\h{o} h\`ang/\d{o}n h\`ang & \textbf{C\`on thi\'eu} \\
-Qu\h{a}n l\'y tin t\u{u}c đ\`ay \d{u} cho admin & \textbf{C\`on thi\'eu} \\
-\bottomrule
-\end{longtable}
-
-\subsection{H\h{a}ng m\d{u}c ch\u{u}a \d{a}p \u{u}ng \d{u} b\`ai to\'an}
-\begin{itemize}[leftmargin=*]
-  \item Ch\u{u}a c\'o module b\`inh lu\d{a}n/\d{a}nh gi\'a cho s\h{a}n ph\h{a}m ho\d{a}c tin t\u{u}c.
-  \item Ch\u{u}a c\'o module gi\h{o} h\`ang/\d{o}n h\`ang.
-  \item Ch\u{u}a c\'o CRUD tin t\u{u}c \d{a}\`ay \d{u} ph\'ia admin (th\^em/s\h{u}a/x\'oa/t\`im ki\'em/ph\^an trang).
-\end{itemize}
-
-\subsection{K\h{e} ho\d{a}ch b\h{o} sung giai \d{o}\d{a}n cu\'oi}
-\begin{enumerate}[leftmargin=*]
-  \item Ho\`an th\`anh CRUD tin t\u{u}c cho admin, t\'ach model/controller/view r\~o r\`ang.
-  \item Ho\`an th\`anh module b\`inh lu\d{a}n/\d{a}nh gi\'a k\`em duy\d{e}t n\d{o}i dung c\u{o} b\h{a}n.
-  \item Ho\`an th\`anh gi\h{o} h\`ang/\d{o}n h\`ang m\d{u}c c\u{o} b\h{a}n \d{e} \d{a}p \u{u}ng checklist n\d{o}p b\'ao c\'ao.
+\begin{enumerate}
+  \item Hoàn thiện CRUD tin tức phía admin (xem, thêm, sửa, xóa, tìm kiếm, phân trang).
+  \item Bổ sung module bình luận/đánh giá có duyệt nội dung cơ bản.
+  \item Nếu theo hướng thương mại điện tử: bổ sung giỏ hàng, đơn hàng và trạng thái đơn.
+  \item Chuẩn hóa dashboard quản trị theo template Srtdash đúng tinh thần đề.
 \end{enumerate}
 
-\section{Ph\^an c\^ong c\^ong vi\d{e}c}
-\begin{itemize}[leftmargin=*]
-  \item TV1: giao di\^en home + contact + lu\`ong li\^en h\d{e}.
-  \item TV2: giao di\^en about + faq + responsive.
-  \item TV3: s\h{a}n ph\h{a}m, t\`im ki\'em, ph\^an trang, chi ti\'et.
-  \item TV4: tin t\u{u}c, t\`im ki\'em, ph\^an trang, chi ti\'et.
-  \item C\`ong t\'ac chung: auth, profile, admin dashboard c\u{o} b\h{a}n.
+\section{Phân công công việc nhóm}
+\begin{itemize}
+  \item Thành viên 1: giao diện trang chủ, liên hệ; luồng xử lý liên hệ.
+  \item Thành viên 2: giao diện giới thiệu, hỏi đáp; responsive.
+  \item Thành viên 3: danh sách sản phẩm, tìm kiếm, phân trang, chi tiết sản phẩm.
+  \item Thành viên 4: danh sách tin tức, tìm kiếm, phân trang, chi tiết tin tức.
+  \item Phần chung: đăng ký/đăng nhập, phân quyền, hồ sơ người dùng, module quản trị cơ bản.
 \end{itemize}
 
-\section{K\h{e}t lu\d{a}n v\`a h\u{o}\'ng ph\'at tri\h{e}n}
-B\h{a}n 2026 \d{a} \`a chuy\h{e}n t\u{u} b\'ao c\'ao thu\`an giao di\^en sang b\'ao c\'ao g\h{a}n v\`oi h\d{e} th\'ong v\d{a}n h\`anh. C\'ac ph\`an c\`on thi\'eu theo \`e (comment, gi\h{o} h\`ang/\d{o}n h\`ang, CRUD tin t\u{u}c cho admin) s\u{e} \d{u}\h{o}c tri\h{e}n khai trong c\'ac m\'oc ti\u{e}p theo.
+\section{Kết luận}
+Hệ thống đã hoàn thành phần nền tảng quan trọng theo yêu cầu môn học: giao diện public, xác thực người dùng, hồ sơ cá nhân, tìm kiếm, phân trang cơ bản và quản trị liên hệ/người dùng ở mức cơ bản. Để đạt mức điểm cao hơn theo đề, nhóm cần tập trung hoàn thiện các phần còn thiếu gồm quản trị tin tức đầy đủ, bình luận/đánh giá và giỏ hàng/đơn hàng (nếu áp dụng).
 
-\section*{T\`ai li\d{e}u tham kh\h{a}o}
-\begin{itemize}[leftmargin=*]
-  \item \`E b\`ai L\d{a}p tr\`inh Web HK2 2025--2026 (b\h{a}n cung c\d{a}p tr\^en BKel).
-  \item T\`ai li\d{e}u PHP: \url{https://www.php.net/docs.php}.
-  \item T\`ai li\d{e}u SQL (SQLite): \url{https://www.sqlite.org/docs.html}.
-  \item T\`ai li\d{e}u Bootstrap 4: \url{https://getbootstrap.com/docs/4.0/getting-started/introduction/}.
+\section*{Tài liệu tham khảo}
+\begin{itemize}
+  \item Đề bài Lập trình Web HK2 2025--2026 (BKel).
+  \item PHP Documentation: \url{https://www.php.net/docs.php}
+  \item SQLite Documentation: \url{https://www.sqlite.org/docs.html}
+  \item Bootstrap 4 Documentation: \url{https://getbootstrap.com/docs/4.0/getting-started/introduction/}
 \end{itemize}
 
 \end{document}
